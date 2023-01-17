@@ -3,7 +3,6 @@
 const express = require('express');
 
 const routes = express.Router();
-const NotifyController = require('../controller/NotifyController');
 
 routes.get('/', (req, res) => {
   res.status(200).json({

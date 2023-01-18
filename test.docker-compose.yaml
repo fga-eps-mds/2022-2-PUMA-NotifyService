@@ -1,0 +1,35 @@
+version: "3"
+services:
+    db-notify-test:
+        image: postgres
+        container_name: db-notify-test
+        environment:
+            POSTGRES_PASSWORD: ${DB_PASS}
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_DB: ${DB}
+            DATABASE_URL: ${DB_URL_TEST}
+        volumes:
+            - ./dbdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - puma-network
+    notify-service-test:
+        container_name: notify-service-test
+        environment:
+            ENVIRONMENT: notify-test
+        build:
+            context: ../${NOTIFY_PATH}/
+            dockerfile: test.service.Dockerfile
+        ports:
+            - "3003:3003"
+        depends_on:
+            - db-notify-test
+        volumes:
+            - ../${NOTIFY_PATH}:/app
+            - /app/node_modules
+        networks:
+            - puma-network
+
+networks:
+    puma-network:

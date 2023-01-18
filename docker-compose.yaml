@@ -1,0 +1,35 @@
+version: "3"
+services:
+    db-notify-dev:
+        image: postgres
+        container_name: db-notify-dev
+        environment:
+            POSTGRES_PASSWORD: ${DB_PASS}
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_DB: ${DB}
+            DATABASE_URL: ${DB_URL_DEV}
+        volumes:
+            - ./dbdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - puma-network
+    notify-service-dev:
+        container_name: notify-service-dev
+        environment:
+            ENVIRONMENT: notify-dev
+        build:
+            context: ../${NOTIFY_PATH}/
+            dockerfile: dev.service.Dockerfile
+        ports:
+            - "3003:3003"
+        depends_on:
+            - db-notify-dev
+        volumes:
+            - ../${NOTIFY_PATH}:/app
+            - /app/node_modules
+        networks:
+            - puma-network
+
+networks:
+    puma-network:
